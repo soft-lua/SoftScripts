@@ -44,24 +44,6 @@ if RunService:IsStudio() then
 	isStudio = true
 end
 
-local UI = CoreGui:FindFirstChild("Luna")
-
--- Add a toggle variable
-local isUIToggleEnabled = true
-
-local function toggleUI()
-    if UI then
-        isUIToggleEnabled = not isUIToggleEnabled
-        UI.Enabled = isUIToggleEnabled
-    end
-end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.K then
-        toggleUI()
-    end
-end)
-
 -- Credits To Latte Softworks And qweery for Lucide And Material Icons Respectively.
 local IconModule = {
 	Lucide = nil,

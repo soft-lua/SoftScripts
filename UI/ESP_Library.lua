@@ -26,13 +26,14 @@ local bones = {
 --// Settings
 local ESP_SETTINGS = {
     BoxOutlineColor = Color3.new(0, 0, 0),
-    BoxColor = Color3.new(1, 1, 1),
+    BoxColor = Color3.new(1, 0, 0),
     NameColor = Color3.new(1, 1, 1),
+    OperatorColor = Color3.new(1, 1, 1),
     HealthOutlineColor = Color3.new(0, 0, 0),
     HealthHighColor = Color3.new(0, 1, 0),
     HealthLowColor = Color3.new(1, 0, 0),
     CharSize = Vector2.new(4, 6),
-    Teamcheck = false,
+    Teamcheck = true,
     WallCheck = false,
     Enabled = false,
     ShowBox = false,
@@ -47,6 +48,11 @@ local ESP_SETTINGS = {
     SkeletonsColor = Color3.new(1, 1, 1),
     TracerPosition = "Bottom",
 }
+
+local function isPlayerAlive(character)
+    local humanoid = character:FindFirstChild("Humanoid")
+    return humanoid and humanoid.Health > 0
+end
 
 local function create(class, properties)
     local drawing = Drawing.new(class)
@@ -135,7 +141,7 @@ end
 local function updateEsp()
     for player, esp in pairs(cache) do
         local character, team = player.Character, player.Team
-        if character and (not ESP_SETTINGS.Teamcheck or (team and team ~= localPlayer.Team)) then
+        if character and isPlayerAlive(character) and (not ESP_SETTINGS.Teamcheck or (team and team ~= localPlayer.Team)) then
             local rootPart = character:FindFirstChild("HumanoidRootPart")
             local head = character:FindFirstChild("Head")
             local humanoid = character:FindFirstChild("Humanoid")
@@ -148,16 +154,16 @@ local function updateEsp()
                     local charSize = (camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0)).Y - camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 2.6, 0)).Y) / 2
                     local boxSize = Vector2.new(math.floor(charSize * 1.8), math.floor(charSize * 1.9))
                     local boxPosition = Vector2.new(math.floor(hrp2D.X - charSize * 1.8 / 2), math.floor(hrp2D.Y - charSize * 1.6 / 2))
-
+                    -- Show Name
                     if ESP_SETTINGS.ShowName and ESP_SETTINGS.Enabled then
                         esp.name.Visible = true
-                        esp.name.Text = string.lower(player.Name)
+                        esp.name.Text = string.lower(player.DisplayName)
                         esp.name.Position = Vector2.new(boxSize.X / 2 + boxPosition.X, boxPosition.Y - 16)
                         esp.name.Color = ESP_SETTINGS.NameColor
                     else
                         esp.name.Visible = false
                     end
-
+                    -- Show Box
                     if ESP_SETTINGS.ShowBox and ESP_SETTINGS.Enabled then
                         if ESP_SETTINGS.BoxType == "2D" then
                             esp.boxOutline.Size = boxSize
@@ -261,7 +267,7 @@ local function updateEsp()
                         end
                         esp.boxLines = {}
                     end
-
+                    -- Show Health
                     if ESP_SETTINGS.ShowHealth and ESP_SETTINGS.Enabled then
                         esp.healthOutline.Visible = true
                         esp.health.Visible = true
@@ -275,7 +281,7 @@ local function updateEsp()
                         esp.healthOutline.Visible = false
                         esp.health.Visible = false
                     end
-
+                    -- Show Distance
                     if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
                         local distance = (camera.CFrame.p - rootPart.Position).Magnitude
                         esp.distance.Text = string.format("%.1f studs", distance)
@@ -284,7 +290,7 @@ local function updateEsp()
                     else
                         esp.distance.Visible = false
                     end
-
+                    -- Show Skeletons
                     if ESP_SETTINGS.ShowSkeletons and ESP_SETTINGS.Enabled then
                         if #esp["skeletonlines"] == 0 then
                             for _, bonePair in ipairs(bones) do
@@ -323,8 +329,8 @@ local function updateEsp()
                             skeletonLine:Remove()
                         end
                         esp["skeletonlines"] = {}
-                    end                    
-
+                    end
+                    -- Show Tracers
                     if ESP_SETTINGS.ShowTracer and ESP_SETTINGS.Enabled then
                         local tracerY
                         if ESP_SETTINGS.TracerPosition == "Top" then

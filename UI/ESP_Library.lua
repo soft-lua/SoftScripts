@@ -276,15 +276,19 @@ local function updateEsp()
                         esp.health.Visible = false
                     end
 
-                   if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
-                      local distance = (camera.CFrame.p - rootPart.Position).Magnitude
-                      local distanceInMeters = distance * 0.28 -- Convert studs to meters
-                      esp.distance.Text = string.format("%.1f meters", distanceInMeters)
-                      esp.distance.Position = Vector2.new(boxPosition.X + boxSize.X / 2, boxPosition.Y + boxSize.Y + 5)
-                      esp.distance.Visible = true
-                   else
-                      esp.distance.Visible = false
-                   end
+if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
+    local distance = (camera.CFrame.Position - rootPart.Position).Magnitude
+    if distance < 0.5 then
+        -- If the distance is less than 0.5 studs, round it to 0 for better accuracy.
+        distance = 0
+    end
+    local distanceInMeters = distance * 0.28 -- Convert studs to meters
+    esp.distance.Text = string.format("%.1f meters", distanceInMeters)
+    esp.distance.Position = Vector2.new(boxPosition.X + boxSize.X / 2, boxPosition.Y + boxSize.Y + 5)
+    esp.distance.Visible = true
+else
+    esp.distance.Visible = false
+end
 
                     if ESP_SETTINGS.ShowSkeletons and ESP_SETTINGS.Enabled then
                         if #esp["skeletonlines"] == 0 then

@@ -262,28 +262,29 @@ local function updateEsp()
                         esp.boxLines = {}
                     end
 
-                    if ESP_SETTINGS.ShowHealth and ESP_SETTINGS.Enabled then
+                   if ESP_SETTINGS.ShowHealth and ESP_SETTINGS.Enabled then
                         esp.healthOutline.Visible = true
                         esp.health.Visible = true
                         local healthPercentage = player.Character.Humanoid.Health / player.Character.Humanoid.MaxHealth
-                        esp.healthOutline.From = Vector2.new(boxPosition.X - 6, boxPosition.Y + boxSize.Y)
+                        esp.healthOutline.From = Vector2.new(boxPosition.X - 8, boxPosition.Y + boxSize.Y) -- Adjusted width
                         esp.healthOutline.To = Vector2.new(esp.healthOutline.From.X, esp.healthOutline.From.Y - boxSize.Y)
-                        esp.health.From = Vector2.new((boxPosition.X - 5), boxPosition.Y + boxSize.Y)
+                        esp.health.From = Vector2.new((boxPosition.X - 7), boxPosition.Y + boxSize.Y) -- Adjusted width
                         esp.health.To = Vector2.new(esp.health.From.X, esp.health.From.Y - (player.Character.Humanoid.Health / player.Character.Humanoid.MaxHealth) * boxSize.Y)
                         esp.health.Color = ESP_SETTINGS.HealthLowColor:Lerp(ESP_SETTINGS.HealthHighColor, healthPercentage)
-                    else
+                   else
                         esp.healthOutline.Visible = false
                         esp.health.Visible = false
                     end
 
-                    if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
-                        local distance = (camera.CFrame.p - rootPart.Position).Magnitude
-                        esp.distance.Text = string.format("%.1f studs", distance)
-                        esp.distance.Position = Vector2.new(boxPosition.X + boxSize.X / 2, boxPosition.Y + boxSize.Y + 5)
-                        esp.distance.Visible = true
-                    else
-                        esp.distance.Visible = false
-                    end
+                   if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
+                      local distance = (camera.CFrame.p - rootPart.Position).Magnitude
+                      local distanceInMeters = distance * 0.28 -- Convert studs to meters
+                      esp.distance.Text = string.format("%.1f meters", distanceInMeters)
+                      esp.distance.Position = Vector2.new(boxPosition.X + boxSize.X / 2, boxPosition.Y + boxSize.Y + 5)
+                      esp.distance.Visible = true
+                   else
+                      esp.distance.Visible = false
+                   end
 
                     if ESP_SETTINGS.ShowSkeletons and ESP_SETTINGS.Enabled then
                         if #esp["skeletonlines"] == 0 then
